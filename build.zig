@@ -10,7 +10,6 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-
     exe_mod.link_libc = true;
 
     const exe = b.addExecutable(.{
@@ -18,7 +17,13 @@ pub fn build(b: *std.Build) void {
         .root_module = exe_mod,
     });
 
-    const dynLib = b.addLibrary(.{ .name = "afnlib", .linkage = .dynamic, .root_module = exe_mod });
+    const lib_mod = b.createModule(.{
+        .target = target,
+        .optimize = optimize,
+    });
+
+    lib_mod.link_libc = true;
+    const dynLib = b.addLibrary(.{ .name = "afn", .linkage = .dynamic, .root_module = lib_mod });
     dynLib.addCSourceFile(.{ .file = b.path("clib/Afunction.c") });
 
     b.installArtifact(exe);
